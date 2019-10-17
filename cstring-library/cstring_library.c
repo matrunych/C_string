@@ -1,4 +1,4 @@
-#include "library.h"
+#include "cstring_library.h"
 
 #include <stdlib.h>
 
@@ -97,7 +97,7 @@ int my_str_putc(my_str_t *str, size_t index, char c){
 //! Якщо в буфері було зарезервовано на байт більше за макс. розмір, можна
 //! просто додати нульовий символ в кінці та повернути вказівник data.
 const char *my_str_get_cstr(my_str_t *str){
-    (*str).data[(*str).size_m + 1] = "\0";
+    (*str).data[(*str).size_m + 1] = '\0';
     return (*str).data;
 }
 
@@ -470,12 +470,15 @@ int my_str_read_file_delim(my_str_t *str, FILE *file, char delimiter){
     int numCh;
     str->size_m = 0;
     while ((numCh=fgetc(file)) != delimiter){
-        numCh++;
-        if (my_str_size < numCh)
-        {
-            my_str_reserve(str, 2 * (*str).size_m);
+        if(my_str_pushback(str, (char) numCh) != 0){
+            return -1;
         }
-        my_str_pushback(str, (char)numCh);
+//        numCh++;
+//        if (my_str_size < numCh)
+//        {
+//            my_str_reserve(str, 2 * (*str).size_m);
+//        }
+//        my_str_pushback(str, (char)numCh);
 
     }
 
