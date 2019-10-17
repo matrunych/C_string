@@ -457,7 +457,7 @@ int my_str_write_file(const my_str_t *str, FILE *file){
 
 //! Записати стрічку на консоль:
 //! У випадку помилки повертає різні від'ємні числа, якщо все ОК -- 0.
-int my_str_write(const my_str_t *str, FILE *file){
+int my_str_write(const my_str_t *str){
     return my_str_write_file(str, stdout);
 }
 
