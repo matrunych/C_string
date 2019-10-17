@@ -40,6 +40,8 @@ int my_str_from_cstr(my_str_t *str, const char *cstr, size_t buf_size){
     memcpy(str->data, cstr, csize);
     str->size_m = csize;
     return 0;
+
+
 }
 
 size_t my_str_size(const my_str_t *str){
@@ -53,7 +55,7 @@ size_t my_str_capacity(const my_str_t *str){
     if(str == NULL){
         return 0;
     }
-    return (*str).capacity_m;
+    return str->capacity_m;
 }
 
 int my_str_empty(const my_str_t *str){
@@ -69,10 +71,7 @@ int my_str_empty(const my_str_t *str){
 int my_str_getc(const my_str_t *str, size_t index){
 //    Returns the character at the given index,
 //    or -1 if you move beyond the str
-    if(str == NULL){
-        return -1;
-    }
-    if((index >= (*str).size_m) || (index < 0){
+    if(str == NULL || (index >= (*str).size_m) || (index < 0)){
         return -1;
     }
     return (*str).data[index];
@@ -82,10 +81,7 @@ int my_str_putc(my_str_t *str, size_t index, char c){
 //! Записує символ у вказану позиції (заміняючи той, що там був),
 //! Повертає 0, якщо позиція в межах стрічки,
 //! Поветає -1, не змінюючи її вмісту, якщо ні.
-    if(str == NULL){
-        return -1;
-    }
-    if((index >= (*str).size_m) || (index < 0){
+    if(str == NULL || (index >= (*str).size_m) || (index < 0)){
         return -1;
     }
     (*str).data[index] = c;
@@ -171,6 +167,9 @@ void my_str_clear(my_str_t *str){
 //! За потреби -- збільшує буфер.
 //! У випадку помилки повертає різні від'ємні числа, якщо все ОК -- 0.
 int my_str_insert_c(my_str_t *str, char c, size_t pos){
+    if (str == NULL) {
+        return -2;
+    }
     if ((*str).size_m < pos) {
         return -1;
     }
@@ -179,12 +178,16 @@ int my_str_insert_c(my_str_t *str, char c, size_t pos){
     }
     memmove(str->data + pos + 1, str->data + pos, str->capacity_m);
     str->data[pos] = c;
+    str->size_m++;
     return 0;
 }
 
 int my_str_insert(my_str_t *str, const my_str_t *from, size_t pos) {
-    if ((*str).size_m < pos) {
+    if(str == NULL || from == NULL){
         return -1;
+    }
+    if ((*str).size_m < pos) {
+        return -2;
     }
     if (str->size_m == str->capacity_m) {
         my_str_reserve(str, str->capacity_m + 1);
@@ -193,18 +196,28 @@ int my_str_insert(my_str_t *str, const my_str_t *from, size_t pos) {
     for (int i = pos; i < pos + from->size_m; i++) {
         str->data[i] = from->data[i-pos];
     }
+    str->size_m += from->size_m;
     return 0;
 }
 
-int my_str_insert_cstr(my_str_t *str, const char *from, size_t pos);
+//! Вставити C-стрічку в заданій позиції, змістивши решту символів праворуч.
+//! За потреби -- збільшує буфер.
+//! У випадку помилки повертає різні від'ємні числа, якщо все ОК -- 0.
+int my_str_insert_cstr(my_str_t *str, const char *from, size_t pos){
+    my_str_t cstr;
+    my_str_create(&cstr, 0);
+    my_str_from_cstr(&cstr, from, 0);
+    int fin = my_str_insert(str, &cstr, pos);
+    return fin;
+}
 
 int my_str_append(my_str_t *str, const my_str_t *from) {
-    my_str_insert(str, from, str->size_m);
-    return 0;
+//    my_str_insert(str, from, str->size_m);
+    return my_str_insert(str, from, str->size_m);
 }
 
 int my_str_append_cstr(my_str_t *str, const char *from){
-    return 0;
+    return my_str_insert_cstr(str, from, str->size_m);
 }
 
 int my_str_substr(const my_str_t *from, my_str_t *to, size_t beg, size_t end){
@@ -288,22 +301,20 @@ int my_str_shrink_to_fit(my_str_t *str) {
 //! розміром стрічки зрозуміла?
 //! У випадку помилки повертає різні від'ємні числа, якщо все ОК -- 0.
 int my_str_resize(my_str_t *str, size_t new_size, char sym){
-    if (new_size == str->size_m){
-        return 0;
-    }
     if (new_size <= 0){
         return -1;
+    }
+    if (new_size <= str->size_m ){
+        str->size_m = new_size;
+        return 0;
     }
     if (new_size > str->size_m) {
         my_str_reserve(str, new_size);
         for (int i = str->size_m; i < new_size; i++) {
             str->data[i] = sym;
         }
-    } else {
-       return 0;
-
+        str->size_m = new_size;
     }
-    str->size_m = new_size;
     return 0;
 
 }
@@ -361,7 +372,22 @@ int my_str_cmp(const my_str_t *str1, const my_str_t *str2){
 //! -1 (або інше від'ємне значення), якщо перша менша,
 //! 1 (або інше додатне значення) -- якщо друга.
 //! Поведінка має бути такою ж, як в strcmp.
-int my_str_cmp_cstr(const my_str_t *str1, const char *cstr2);
+int my_str_cmp_cstr(const my_str_t *str1, const char *cstr2){
+    size_t cstr2_size = 0;
+    while (cstr2[cstr2_size] != '\0') cstr2_size++;
+
+    if (str1->size_m > cstr2_size)
+        return 1;
+    else if (str1->size_m < cstr2_size)
+        return -1;
+    else {
+        for (int j = 0; j < str1->size_m; ++j) {
+            if (str1->data[j] != cstr2[j])
+                return -1;
+        }
+        return 0;
+    }
+}
 
 
 //! Знайти перший символ в стрічці, повернути його номер
@@ -383,7 +409,13 @@ size_t my_str_find_c(const my_str_t *str, char tofind, size_t from) {
 //! Знайти символ в стрічці, для якого передана
 //! функція повернула true, повернути його номер
 //! або (size_t)(-1), якщо не знайдено:
-size_t my_str_find_if(const my_str_t *str, int (*predicat)(int));
+size_t my_str_find_if(const my_str_t *str, int (*predicat)(int)){
+    for (int j = 0; j < str->size_m; ++j) {
+        if (predicat((int)str->data[j]))
+            return j;
+    }
+    return (size_t) (-1);
+}
 
 
 //! Прочитати стрічку із файлу. Читає цілий файл.
@@ -391,25 +423,63 @@ size_t my_str_find_if(const my_str_t *str, int (*predicat)(int));
 //! збільшуйте буфер.
 //! Рекомендую скористатися fgets().
 //! У випадку помилки повертає різні від'ємні числа, якщо все ОК -- 0.
-int my_str_read_file(my_str_t *str, FILE *file);
+int my_str_read_file(my_str_t *str, FILE *file){
+    return my_str_read_file_delim(str, file, EOF);
+}
 
 
 //! Аналог my_str_read_file, із stdin.
-int my_str_read(my_str_t *str);
+int my_str_read(my_str_t *str){
+    return my_str_read_file(str, stdin);
+
+}
 
 
 //! Записати стрічку в файл:
 //! У випадку помилки повертає різні від'ємні числа, якщо все ОК -- 0.
-int my_str_write_file(const my_str_t *str, FILE *file);
+int my_str_write_file(const my_str_t *str, FILE *file){
+    if (!file)
+    {
+        printf("No such file!\n");
+        return -1;
+    }
+
+    if (fputs((*str).data, file))
+    {
+        printf("Error:string cannot write!");
+    }
+
+    return 0;
+
+
+}
 
 
 //! Записати стрічку на консоль:
 //! У випадку помилки повертає різні від'ємні числа, якщо все ОК -- 0.
-int my_str_write(const my_str_t *str, FILE *file);
+int my_str_write(const my_str_t *str, FILE *file){
+    return my_str_write_file(str, stdout);
+}
 
 
 //! На відміну від my_str_read_file(), яка читає до кінця файлу,
 //! читає по вказаний delimiter, за потреби
 //! збільшує стрічку.
 //! У випадку помилки повертає різні від'ємні числа, якщо все ОК -- 0.
-int my_str_read_file_delim(my_str_t *str, FILE *file, char delimiter);
+int my_str_read_file_delim(my_str_t *str, FILE *file, char delimiter){
+    int numCh;
+    str->size_m = 0;
+    while ((numCh=fgetc(file)) != delimiter){
+        numCh++;
+        if (my_str_size < numCh)
+        {
+            my_str_reserve(str, 2 * (*str).size_m);
+        }
+        my_str_pushback(str, (char)numCh);
+
+    }
+
+//    (*str).size_m = numCh;
+    return 0;
+
+}
