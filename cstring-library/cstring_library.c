@@ -24,6 +24,7 @@ int my_str_create(my_str_t *str, size_t buf_size){
 void my_str_free(my_str_t *str){
 //    Free memory by destroying str.
     free(str->data);
+    str->data = NULL;
 }
 
 int my_str_from_cstr(my_str_t *str, const char *cstr, size_t buf_size){
@@ -39,6 +40,7 @@ int my_str_from_cstr(my_str_t *str, const char *cstr, size_t buf_size){
     }
     memcpy(str->data, cstr, csize);
     str->size_m = csize;
+    str->capacity_m = csize + 1;
     return 0;
 
 

@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 
-#include "library/cstring_library.h"
+#include "cstring-library/cstring_library.h"
 
 int main(void)
 {
