@@ -8,14 +8,14 @@
 int my_str_create(my_str_t *str, size_t buf_size){
 //    create str object
 //    return -1 if nothing given
-    (*str).capacity_m = buf_size + 1;
-    (*str).size_m = 0;
+    str->capacity_m = buf_size + 1;
+    str->size_m = 0;
 //    (*str).data = (char *) calloc((*str).capacity_m, sizeof(char));
 
-    (*str).data = (char*) malloc(str->capacity_m);
+    str->data = (char*) malloc(str->capacity_m);
 
 
-    if ((*str).data == NULL){
+    if (str->data == NULL){
         return -1;
     }
     return 0;
@@ -50,7 +50,7 @@ size_t my_str_size(const my_str_t *str){
     if(str == NULL){
         return 0;
     }
-    return (*str).size_m;
+    return str->size_m;
 }
 
 size_t my_str_capacity(const my_str_t *str){
@@ -152,7 +152,6 @@ int my_str_copy(const my_str_t *from, my_str_t *to, int reserve){
     } else {
         to->capacity_m = from->size_m;
     }
-
 
 //    copy str
     memcpy(to->data, from->data, to->capacity_m);

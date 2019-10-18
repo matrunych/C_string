@@ -1,105 +1,86 @@
-
 #include <stdio.h>
 
-#include "cstring-library/cstring_library.h"
+#include "cstring-library/cstring_library.c"
+#include "func_examples.h"
 
-int main(void)
+int main()
 {
-    FILE* readf;
 
-    if ((readf = fopen("data/0.txt", "r")) == NULL)
+    FILE* readF = fopen("data/0.txt", "r");
+    FILE* writeF = fopen("data/0.out", "w");
+
+    if (!readF)
     {
-        printf("File does not exist!");
+        printf("Error: file cannot be open!");
         exit(1);
     }
 
-    int textLen = 0;
+    if (!writeF)
+    {
+        printf("Error: file cannot be open!");
+        exit(1);
+    }
+
+    my_str_t str;
+
+    if (my_str_create(&str, 256))
+    {
+        printf("Error: cannot create string!");
+    }
+
+    if (my_str_read_file(&str, readF))
+    {
+        printf("Cannot read such file!");
+    }
+
     char ch;
-    while ((ch = fgetc(readf)) != EOF)
+    char ch_next;
+    for (size_t i = 0; i < str.size_m; i++)
     {
-        textLen++;
-    }
-    fclose(readf);
 
-    if ((readf = fopen("data/0.txt", "r")) == NULL)
-    {
-        printf("File does not exist!");
-        exit(1);
-    }
-    char text[textLen];
-    char modText[textLen];
-    fread(text, sizeof(char), textLen, readf);
-
-    fclose(readf);
-
-    int i;
-    for (i = 0; i < textLen; i++)
-    {
-        printf("%c\n", text[i]);
-    }
-
-    int j = 0;
-    int flag = 0;
-    int lenOut;
-    for (i = 0; i < textLen; ++i)
-    {
-        if (j >= textLen)
+        ch = my_str_getc(&str, i);
+        ch_next = my_str_getc(&str, i+1);
+        if (ch == '.' || ch == ',' || ch == '!'
+            || ch == '?' || ch == ':' || ch == ';' || ch == '-'
+            || ch == '\'' || ch == '\"')
         {
-            lenOut = i;
-            break;
-        }
-        if (text[j] >= 'A' && text[j] <= 'Z')
-        {
-            modText[i] = text[j] - 'A' + 'a';
-            j++;
-        }
-        else if (text[j] >= 'a' && text[j] <= 'z')
-        {
-            modText[i] = text[j];
-            j++;
-        }
-        else
-        {
-            while ((text[j] < 'A') || (text[j] > 'Z' && text[j] < 'a') || (text[j] >= 'z'))
+            for (size_t j = 0; j < str.size_m - i - 1; j++)
             {
-                if (text[j] == ' ') flag = 1;
-
-                j++;
+                str.data[i+j] = str.data[i+j+1];
             }
-            if (flag == 1)
+            my_str_popback(&str);
+            i--;
+        }
+        if (ch >= 'A' && ch <= 'Z')
+        {
+            str.data[i] = ch -'A' + 'a';
+        }
+        if (ch == ' ')
+        {
+            if (ch_next == ' ')
             {
-                flag = 0;
-                modText[i] = ' ';
+                for (size_t j = 0; j < str.size_m - i - 1; j++)
+                {
+                    str.data[i+j] = str.data[i+j+1];
+                }
+                my_str_popback(&str);
+                i--;
             }
         }
-
-
     }
 
-    char outText[lenOut];
-    for (j = 0; j < lenOut; j++)
+
+
+    if (my_str_write_file(&str,writeF))
     {
-        outText[j] = modText[j];
-    }
-    FILE* writef;
-    if ((writef = fopen("data/0.out", "w")) == NULL)
-    {
-        printf("File does not exist!");
-        exit(1);
+        printf("Cannot write file!");
+        return -1;
     }
 
-    fwrite(outText, sizeof(char), j, writef);
+    fclose(readF);
+    fclose(writeF);
+    my_str_free(&str);
 
-    fclose(writef);
-
-
-    /*my_str_t* text;
-    my_str_create(text, 5);
-
-
-    printf("%zu", (*text).capacity_m);
-
-    my_str_free(text);*/
 
     return 0;
 }
