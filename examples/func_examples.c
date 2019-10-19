@@ -4,6 +4,11 @@
 #include "func_examples.h"
 //#include "main.c"
 
+int test_func(int c) {
+    if ((char) c == ' ') return 1;
+    return 0;
+}
+
 int test_my_str_create(void) {
     my_str_t str;
     my_str_create(&str, 1);
@@ -84,12 +89,19 @@ int test_my_str_putc(void){
     return 0;
 }
 
-int test_my_str_cstr(void);
+int test_my_str_get_cstr(void) {
+    my_str_t str;
+    my_str_create(&str, 0);
+    char *cstr1 = "Hello World!";
+    my_str_from_cstr(&str, cstr1, 13);
 
+    const char *cstr2 = my_str_get_cstr(&str);
 
-
-
-
+    for (int i = 0; i < 12; i++) {
+        if (cstr1[i] != cstr2[i]) return -1;
+    }
+    return 0;
+}
 
 int test_my_str_pushback(void){
     my_str_t str;
@@ -277,6 +289,126 @@ int test_my_str_substr_cstr(void){
     return 0;
 }
 
+int test_my_str_reserve(void) {
+    my_str_t str1;
+    my_str_create(&str1, 0);
+    char *cstr1 = "Hello World!";
+    my_str_from_cstr(&str1, cstr1, 15);
+
+    my_str_reserve(&str1, 20);
+
+    if (str1.capacity_m != 21) return -1;
+    return 0;
+}
+
+int test_my_str_shrink_to_fit(void) {
+    my_str_t str1;
+    my_str_create(&str1, 0);
+    char *cstr1 = "Hello World!";
+    my_str_from_cstr(&str1, cstr1, 20);
+
+    my_str_shrink_to_fit(&str1);
+
+    if (str1.capacity_m != str1.size_m) return -1;
+    return 0;
+}
+
+int test_my_str_resize(void) {
+    my_str_t str1;
+    my_str_create(&str1, 0);
+    char *cstr1 = "Hello World!";
+    my_str_from_cstr(&str1, cstr1, 20);
+
+    my_str_resize(&str1, 10, 'a');
+
+    my_str_t str2;
+    my_str_create(&str2, 0);
+    char *cstr2 = "Hello Worl";
+    my_str_from_cstr(&str2, cstr2, 19);
+
+    for (int i = 0; i < str2.size_m; i++) {
+        if (str1.data[i] != str2.data[i]) return -1;
+    }
+    return 0;
+}
+
+int test_my_str_find(void){
+    my_str_t str1;
+    my_str_create(&str1, 0);
+    char *cstr1 = "Hello World!";
+    my_str_from_cstr(&str1, cstr1, 20);
+
+    my_str_t str2;
+    my_str_create(&str2, 0);
+    char *cstr2 = "or";
+    my_str_from_cstr(&str2, cstr2, 3);
+
+    int num = my_str_find(&str1, &str2, 2);
+    if(num != 7) return -1;
+
+    return 0;
+}
+
+int test_my_str_cmp(void){
+    my_str_t str1;
+    my_str_create(&str1, 0);
+    char *cstr1 = "Hello World!";
+    my_str_from_cstr(&str1, cstr1, 20);
+
+    my_str_t str2;
+    my_str_create(&str2, 0);
+    char *cstr2 = "Hello World!";
+    my_str_from_cstr(&str2, cstr2, 20);
+
+    int res = my_str_cmp(&str1, &str2);
+
+    if(res != 0) return -1;
+
+    return 0;
+}
+
+int test_my_str_cmp_cstr(void){
+    my_str_t str1;
+    my_str_create(&str1, 0);
+    char *cstr1 = "Hello World!";
+    my_str_from_cstr(&str1, cstr1, 20);
+
+    char *cstr2 = "Hello World!";
+
+
+    int res = my_str_cmp_cstr(&str1, cstr2);
+
+    if(res != 0) return -1;
+
+    return 0;
+}
+
+int test_my_str_find_c(void){
+    my_str_t str1;
+    my_str_create(&str1, 0);
+    char *cstr1 = "Hello World!";
+    my_str_from_cstr(&str1, cstr1, 20);
+
+    char c = '!';
+
+    int num = my_str_find_c(&str1, c, 1);
+    if(num != 11) return -1;
+
+    return 0;
+}
+
+int test_my_str_find_if(void){
+    my_str_t str1;
+    my_str_create(&str1, 0);
+    char *cstr1 = "Hello World!";
+    my_str_from_cstr(&str1, cstr1, 20);
+
+    int i = my_str_find_if(&str1, test_func);
+    if (i != 5) return -1;
+
+    return 0;
+}
+
 int main(void) {
     int test_my_str_create_result = test_my_str_create();
     int test_my_str_from_cstr_result = test_my_str_from_cstr();
@@ -286,9 +418,8 @@ int main(void) {
     int test_my_str_empty_result = test_my_str_empty();
     int test_my_str_getc_result = test_my_str_getc();
     int test_my_str_putc_result = test_my_str_putc();
+    int test_my_str_get_cstr_result = test_my_str_get_cstr();
     int test_my_str_popback_result = test_my_str_popback();
-
-
     int test_my_str_pushback_result = test_my_str_pushback();
     int test_my_str_copy_result = test_my_str_copy();
     int test_my_str_clear_result = test_my_str_clear();
@@ -299,6 +430,14 @@ int main(void) {
     int test_my_str_append_cstr_result = test_my_str_append_cstr();
     int test_my_str_substr_result = test_my_str_substr();
     int test_my_str_substr_cstr_result = test_my_str_substr_cstr();
+    int test_my_str_reserve_result = test_my_str_reserve();
+    int test_my_str_shrink_to_fit_result = test_my_str_shrink_to_fit();
+    int test_my_str_resize_result = test_my_str_resize();
+    int test_my_str_find_result = test_my_str_find();
+    int test_my_str_cmp_result = test_my_str_cmp();
+    int test_my_str_cmp_cstr_result = test_my_str_cmp_cstr();
+    int test_my_str_find_c_result = test_my_str_find_c();
+    int test_my_str_find_if_result = test_my_str_find_if();
 
     printf("%d \n", test_my_str_create_result);
     printf("%d \n", test_my_str_from_cstr_result);
@@ -308,7 +447,7 @@ int main(void) {
     printf("%d \n", test_my_str_empty_result);
     printf("%d \n", test_my_str_getc_result);
     printf("%d \n", test_my_str_putc_result);
-
+    printf("%d \n", test_my_str_get_cstr_result);
     printf("%d \n", test_my_str_pushback_result);
     printf("%d \n", test_my_str_popback_result);
     printf("%d \n", test_my_str_copy_result);
@@ -320,9 +459,14 @@ int main(void) {
     printf("%d \n", test_my_str_append_cstr_result);
     printf("%d \n", test_my_str_substr_result);
     printf("%d \n", test_my_str_substr_cstr_result);
-
-
+    printf("%d \n", test_my_str_reserve_result);
+    printf("%d \n", test_my_str_shrink_to_fit_result);
+    printf("%d \n", test_my_str_resize_result);
+    printf("%d \n", test_my_str_find_result);
+    printf("%d \n", test_my_str_cmp_result);
+    printf("%d \n", test_my_str_cmp_cstr_result);
+    printf("%d \n", test_my_str_find_c_result);
+    printf("%d \n", test_my_str_find_if_result);
 
     return 0;
 }
-int main();

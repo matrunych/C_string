@@ -2,6 +2,7 @@
 
 #include "../cstring-library/cstring_library.c"
 #include "func_examples.h"
+#include <time.h>
 
 int main()
 {
@@ -35,9 +36,13 @@ int main()
 
     char ch;
     char ch_next;
+    char ch_prev;
+// ===========================================================================
+    clock_t start = clock();
     for (size_t i = 0; i < str.size_m; i++)
     {
 
+        ch_prev = my_str_getc(&str, i-1);
         ch = my_str_getc(&str, i);
         ch_next = my_str_getc(&str, i+1);
         if (ch == '.' || ch == ',' || ch == '!'
@@ -57,8 +62,10 @@ int main()
         }
         if (ch == ' ')
         {
+
             if (ch_next == ' ')
             {
+
                 for (size_t j = 0; j < str.size_m - i - 1; j++)
                 {
                     str.data[i+j] = str.data[i+j+1];
@@ -66,10 +73,17 @@ int main()
                 my_str_popback(&str);
                 i--;
             }
+            if (ch_prev == ' ')
+            {
+                i -= 2;
+            }
         }
     }
 
+    clock_t finish = clock();
 
+    double time_spent = (double)(finish - start) / CLOCKS_PER_SEC;
+    printf("Time: %.13f\n", time_spent);
 
     if (my_str_write_file(&str,writeF))
     {
