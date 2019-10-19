@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "cstring-library/cstring_library.c"
+#include "../cstring-library/cstring_library.c"
 #include "func_examples.h"
 
 int main()
