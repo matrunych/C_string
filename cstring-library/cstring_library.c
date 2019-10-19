@@ -233,10 +233,17 @@ int my_str_substr(const my_str_t *from, my_str_t *to, size_t beg, size_t end){
     for(int i = beg; i < end; i++){
         to->data[i-beg] = from->data[i];
     }
+    to->size_m = end - beg;
     return 0;
 }
 
 int my_str_substr_cstr(const my_str_t *from, char *to, size_t beg, size_t end){
+    if(beg < 0 || beg > from->size_m){
+        return -1;
+    }
+    for(int i = beg; i < end; i++){
+        to[i-beg] = from->data[i];
+    }
     return 0;
 }
 

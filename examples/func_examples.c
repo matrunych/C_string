@@ -216,6 +216,27 @@ int test_my_str_append(void){
     return 0;
 }
 
+int test_my_str_append_cstr(void){
+    my_str_t str1;
+    my_str_create(&str1, 0);
+    char *cstr1 = "Hello World!";
+    my_str_from_cstr(&str1, cstr1, 20);
+
+    char *cstr = " Bye!";
+
+    my_str_append_cstr(&str1, cstr);
+
+    my_str_t str3;
+    my_str_create(&str3, 0);
+    char *cstr3 = "Hello World! Bye!";
+    my_str_from_cstr(&str3, cstr3, 19);
+
+    for (int i = 0; i < str1.size_m; i++) {
+        if (str1.data[i] != str3.data[i]) return -1;
+    }
+    return 0;
+}
+
 int test_my_str_substr(void){
     my_str_t str1;
     my_str_create(&str1, 0);
@@ -232,8 +253,26 @@ int test_my_str_substr(void){
     char *cstr3 = "World";
     my_str_from_cstr(&str3, cstr3, 19);
 
-    for (int i = 0; i < str1.size_m; i++) {
+    for (int i = 0; i < str2.size_m; i++) {
         if (str2.data[i] != str3.data[i]) return -1;
+    }
+    return 0;
+}
+
+int test_my_str_substr_cstr(void){
+    my_str_t str1;
+    my_str_create(&str1, 0);
+    char *cstr1 = "Hello World!";
+    my_str_from_cstr(&str1, cstr1, 20);
+
+    char cstr2[] = "abcde";
+
+    my_str_substr_cstr(&str1, cstr2, 6, 11);
+
+    char *cstr3 = "World";
+
+    for (int i = 0; i < 5; i++) {
+        if (cstr2[i] != cstr3[i]) return -1;
     }
     return 0;
 }
@@ -257,7 +296,9 @@ int main(void) {
     int test_my_str_insert_result = test_my_str_insert();
     int test_my_str_insert_cstr_result = test_my_str_insert_cstr();
     int test_my_str_append_result = test_my_str_append();
+    int test_my_str_append_cstr_result = test_my_str_append_cstr();
     int test_my_str_substr_result = test_my_str_substr();
+    int test_my_str_substr_cstr_result = test_my_str_substr_cstr();
 
     printf("%d \n", test_my_str_create_result);
     printf("%d \n", test_my_str_from_cstr_result);
@@ -276,7 +317,9 @@ int main(void) {
     printf("%d \n", test_my_str_insert_result);
     printf("%d \n", test_my_str_insert_cstr_result);
     printf("%d \n", test_my_str_append_result);
+    printf("%d \n", test_my_str_append_cstr_result);
     printf("%d \n", test_my_str_substr_result);
+    printf("%d \n", test_my_str_substr_cstr_result);
 
 
 
