@@ -152,24 +152,19 @@ int test_my_str_insert(void){
     my_str_create(&str1, 0);
     char *cstr1 = "Hello World!";
     my_str_from_cstr(&str1, cstr1, 20);
-    printf("First %s  \n", str1.data);
 
     my_str_t str2;
     my_str_create(&str2, 0);
     char *cstr2 = "Great ";
     my_str_from_cstr(&str2, cstr2, 7);
-    printf("str 2  %s  \n", str2.data);
 
-    my_str_insert(&str1, &str2, 30);
+    my_str_insert(&str1, &str2, 6);
 
     my_str_t str3;
     my_str_create(&str3, 0);
     char *cstr3 = "Hello Great World!";
     my_str_from_cstr(&str3, cstr3, 19);
-    printf("str 3 %s  \n", str3.data);
 
-
-    printf("%s", str1.data);
     for (int i = 0; i < str1.size_m; i++) {
         if (str1.data[i] != str3.data[i]) return -1;
     }
@@ -207,7 +202,7 @@ int main(void) {
     printf("%d \n", test_my_str_popback_result);
     printf("%d \n", test_my_str_copy_result);
     printf("%d \n", test_my_str_clear_result);
-    printf("insert  c %d \n", test_my_str_insert_c_result);
+    printf("%d \n", test_my_str_insert_c_result);
     printf("%d \n", test_my_str_insert_result);
 
 

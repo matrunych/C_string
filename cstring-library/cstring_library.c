@@ -190,8 +190,8 @@ int my_str_insert(my_str_t *str, const my_str_t *from, size_t pos) {
     if ((*str).size_m < pos) {
         return -2;
     }
-    if (str->size_m == str->capacity_m) {
-        my_str_reserve(str, str->capacity_m + 1);
+    if (str->capacity_m < str->size_m + from->size_m) {
+        my_str_reserve(str, str->size_m + from->size_m);
     }
     memmove(str->data + pos + from->size_m, str->data + pos, str->capacity_m);
     for (int i = pos; i < pos + from->size_m; i++) {
