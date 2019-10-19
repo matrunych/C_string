@@ -2,7 +2,6 @@
 
 #include "../cstring-library/cstring_library.c"
 #include "func_examples.h"
-//#include "main.c"
 
 int test_func(int c) {
     if ((char) c == ' ') return 1;

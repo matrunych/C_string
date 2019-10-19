@@ -4,11 +4,11 @@
 #include "func_examples.h"
 #include <time.h>
 
-int main()
+int main(int argc, char* argv[])
 {
 
-    FILE* readF = fopen("data/0.txt", "r");
-    FILE* writeF = fopen("data/0.out", "w");
+    FILE* readF = fopen(argv[1], "r");
+    FILE* writeF = fopen(argv[2], "w");
 
     if (!readF)
     {
@@ -79,6 +79,8 @@ int main()
             }
         }
     }
+
+    my_str_shrink_to_fit(&str);
 
     clock_t finish = clock();
 
