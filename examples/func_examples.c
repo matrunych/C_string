@@ -171,6 +171,73 @@ int test_my_str_insert(void){
     return 0;
 }
 
+int test_my_str_insert_cstr(void){
+    my_str_t str1;
+    my_str_create(&str1, 0);
+    char *cstr1 = "Hello World!";
+    my_str_from_cstr(&str1, cstr1, 20);
+
+    char *cstr = "My ";
+
+    my_str_insert_cstr(&str1, cstr, 6);
+
+    my_str_t str3;
+    my_str_create(&str3, 0);
+    char *cstr3 = "Hello My World!";
+    my_str_from_cstr(&str3, cstr3, 19);
+
+    for (int i = 0; i < str1.size_m; i++) {
+        if (str1.data[i] != str3.data[i]) return -1;
+    }
+    return 0;
+}
+
+int test_my_str_append(void){
+    my_str_t str1;
+    my_str_create(&str1, 0);
+    char *cstr1 = "Hello World!";
+    my_str_from_cstr(&str1, cstr1, 20);
+
+    my_str_t str2;
+    my_str_create(&str2, 0);
+    char *cstr2 = " Bye!";
+    my_str_from_cstr(&str2, cstr2, 6);
+
+    my_str_append(&str1, &str2);
+
+    my_str_t str3;
+    my_str_create(&str3, 0);
+    char *cstr3 = "Hello World! Bye!";
+    my_str_from_cstr(&str3, cstr3, 19);
+
+    for (int i = 0; i < str1.size_m; i++) {
+        if (str1.data[i] != str3.data[i]) return -1;
+    }
+    return 0;
+}
+
+int test_my_str_substr(void){
+    my_str_t str1;
+    my_str_create(&str1, 0);
+    char *cstr1 = "Hello World!";
+    my_str_from_cstr(&str1, cstr1, 20);
+
+    my_str_t str2;
+    my_str_create(&str2, 0);
+
+    my_str_substr(&str1, &str2, 6, 11);
+
+    my_str_t str3;
+    my_str_create(&str3, 0);
+    char *cstr3 = "World";
+    my_str_from_cstr(&str3, cstr3, 19);
+
+    for (int i = 0; i < str1.size_m; i++) {
+        if (str2.data[i] != str3.data[i]) return -1;
+    }
+    return 0;
+}
+
 int main(void) {
     int test_my_str_create_result = test_my_str_create();
     int test_my_str_from_cstr_result = test_my_str_from_cstr();
@@ -188,6 +255,9 @@ int main(void) {
     int test_my_str_clear_result = test_my_str_clear();
     int test_my_str_insert_c_result = test_my_str_insert_c();
     int test_my_str_insert_result = test_my_str_insert();
+    int test_my_str_insert_cstr_result = test_my_str_insert_cstr();
+    int test_my_str_append_result = test_my_str_append();
+    int test_my_str_substr_result = test_my_str_substr();
 
     printf("%d \n", test_my_str_create_result);
     printf("%d \n", test_my_str_from_cstr_result);
@@ -204,6 +274,9 @@ int main(void) {
     printf("%d \n", test_my_str_clear_result);
     printf("%d \n", test_my_str_insert_c_result);
     printf("%d \n", test_my_str_insert_result);
+    printf("%d \n", test_my_str_insert_cstr_result);
+    printf("%d \n", test_my_str_append_result);
+    printf("%d \n", test_my_str_substr_result);
 
 
 

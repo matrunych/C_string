@@ -205,9 +205,11 @@ int my_str_insert(my_str_t *str, const my_str_t *from, size_t pos) {
 //! За потреби -- збільшує буфер.
 //! У випадку помилки повертає різні від'ємні числа, якщо все ОК -- 0.
 int my_str_insert_cstr(my_str_t *str, const char *from, size_t pos){
+    size_t cstr_size = 0;
+    while (from[cstr_size] != '\0') cstr_size++;
     my_str_t cstr;
     my_str_create(&cstr, 0);
-    my_str_from_cstr(&cstr, from, 0);
+    my_str_from_cstr(&cstr, from, cstr_size);
     int fin = my_str_insert(str, &cstr, pos);
     return fin;
 }
